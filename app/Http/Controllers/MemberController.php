@@ -57,11 +57,22 @@ class MemberController extends Controller
             return redirect()->route('dashboard', ['name' => $member->name]);
         } else {
             // Authentication failed
-            return back()->withInput()->withErrors([
-                'email' => 'Invalid email or password.',
-            ]);
+            $registeredMember = Member::where('email', $request->email)->first();
+    
+            if ($registeredMember) {
+                // Member exists but authentication failed
+                return back()->withInput()->withErrors([
+                    'email' => 'Invalid email or password.',
+                ]);
+            } else {
+                // Member does not exist
+                return back()->withInput()->withErrors([
+                    'email' => 'You are not registered as a member.',
+                ]);
+            }
         }
     }
+    
 
     public function dashboard(Request $request)
     {
